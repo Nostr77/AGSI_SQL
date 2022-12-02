@@ -333,10 +333,22 @@ where
 group by gasdaystart
 ```
 
+DAX chart
+
+```
+ValueforChart1 = 
+IF(HASONEVALUE( Dict1[Indicator]),
+ SWITCH(VALUES( Dict1[Indicator]),
+ "Gas in Storage", SUM(o_table_long_aggregated[Gas_in_Storage_TWh] ),
+ "Injection", SUM(o_table_long_aggregated[Injection_TWh]),
+ "Withdrawal", SUM(o_table_long_aggregated[Withdrawal_TWh])
+ ), "Error")
+```
+
 Result
 
 |Year	|Floating_Date	|gasdaystart	|Gas_in_Storage_TWh	|Injection_TWh	|Withdrawal_TWh
-|---	|---	|---	|	|	|
+|---	|---	|---	|---	|---	|---
 |2012	|2060-08-03T00:00:00.0000000	|2012-08-03T00:00:00.0000000	|616	|2917.9	|46.3
 |2016	|2060-12-09T00:00:00.0000000	|2016-12-09T00:00:00.0000000	|821	|169.6	|5461.7
 |2017	|2060-11-06T00:00:00.0000000	|2017-11-06T00:00:00.0000000	|964.4	|280.5	|2535.8
@@ -349,7 +361,7 @@ Result
 |..	|..	|..	|..	|..	|..
 
 
-### 4
+### 4 
 ![Schema](https://github.com/Nostr77/AGSI_SQL/raw/main/Capture8.JPG)
 
 DAX Header
@@ -362,9 +374,14 @@ DTO4 = IF(HASONEVALUE( Dict1[Indicator]),
  "Withdrawal", CONCATENATE(CONCATENATE("Withdrawal YTD to  ",Format(max(o_last_day_archive[last_day_archive]), "dd MMMM YYYY")), ", TWh"), "Error")
  )```
 
-SQL
+DAX chart
 ```
-```
+ValueforChart3 = 
+IF(HASONEVALUE( Dict1[Indicator]),
+ SWITCH(VALUES( Dict1[Indicator]),
+ "Gas in Storage", calculate(SUM(o_table_long_aggregated[Gas_in_Storage_TWh]), and(month((o_table_long_aggregated[gasdaystart]))=month(max(o_last_day_archive[last_day_archive])), day((o_table_long_aggregated[gasdaystart]))=day((max(o_last_day_archive[last_day_archive]))))),
+ "Injection", calculate(SUM(o_table_long_aggregated[Injection_TWh]), and(month((o_table_long_aggregated[gasdaystart]))<=month(max(o_last_day_archive[last_day_archive])), day((o_table_long_aggregated[gasdaystart]))<=day((max(o_last_day_archive[last_day_archive]))))),
+ "Withdrawal", calculate(SUM(o_table_long_aggregated[Withdrawal_TWh]), and(month((o_table_long_aggregated[gasdaystart]))<=month(max(o_last_day_archive[last_day_archive])), day((o_table_long_aggregated[gasdaystart]))<=day((max(o_last_day_archive[last_day_archive]))))) ), "Please select only one value to display")```
 Result
 
 
