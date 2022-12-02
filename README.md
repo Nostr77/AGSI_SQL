@@ -8,6 +8,7 @@ Data description and preparatory python script you can find here.
 ![Schema](https://github.com/Nostr77/AGSI_SQL/raw/main/Capture4.JPG)
 
 ## Power Query M 1. Finding last date in the Archive and make a API Online Direct Query update in PowerBI
+![Schema](https://github.com/Nostr77/AGSI_SQL/raw/main/Capture9.JPG)
 
 ```
 let
@@ -121,14 +122,139 @@ in
 
 ## Dashboard visuals (consists of (a) visual screenshot (b) SQL script (c) Result table
 
+### 1 o_table.sql
 ![Schema](https://github.com/Nostr77/AGSI_SQL/raw/main/Capture5.JPG)
 
-![Schema](https://github.com/Nostr77/AGSI_SQL/raw/main/Capture6.JPG)
+```
+alter view o_table as
+select 
+	Country, Gas_in_Storage_TWh, Full_by_Countries, rank() over(order by dummy desc) as ranking 
+from
+	(select 
+		grup as Country, 
+		round(sum(gasinstorage),1) as Gas_in_Storage_TWh, 
+		sum(gasinstorage*full_)/(sum(gasinstorage)*100) as Full_by_Countries, 
+		EU, 
+		(case  grup
+		when 'Other' then 1000000
+		else 1000000+sum(gasinstorage)
+		end) as dummy
+	from 
+		(select *
+		from agsi  
+		union
+		select *
+		from agsi_sandbox) as a
+		left join names as n
+		on a.code=n.code
+	where gasdaystart=(select max(gasdaystart) from 
+							(select gasdaystart 
+								from agsi  
+								union
+								select gasdaystart
+								from agsi_sandbox) as a) and EU='EU'
+	group by grup, gasdaystart,EU
 
+	UNION
+
+	select 
+		'*** Total (EU)' as Country, 
+		round(sum(gasinstorage),1) as Gas_in_Storage_TWh, 
+		sum(gasinstorage*full_)/(sum(gasinstorage)*100) as Full_by_Countries, 
+		EU,
+		1000000-1 as dummy
+	from 
+			(select *
+			from agsi  
+			union
+			select *
+			from agsi_sandbox) as a
+		left join names as n
+		on a.code=n.code
+	where gasdaystart=(select max(gasdaystart) from (select gasdaystart 
+								from agsi  
+								union
+								select gasdaystart
+								from agsi_sandbox) as a) and EU='EU'
+	group by gasdaystart,EU  
+
+
+	UNION
+
+	select name as Country, 
+		round(sum(gasinstorage),1) as Gas_in_Storage_TWh, 
+		sum(gasinstorage*full_)/(sum(gasinstorage)*100) as Full_by_Countries, 
+		EU, 
+		1000+sum(gasinstorage) as dummy
+	from 
+				(select *
+			from agsi  
+			union
+			select *
+			from agsi_sandbox) as a
+	left join names as n
+		on a.code=n.code
+	where gasdaystart=(select max(gasdaystart) from [dbo].[AGSI]) and EU='Non-EU'
+	group by name, gasdaystart,EU
+
+	UNION
+
+	select 
+		'*** Total (EU+NonEU)' as Country, 
+		round(sum(gasinstorage),1) as Gas_in_Storage_TWh, 
+		sum(gasinstorage*full_)/(sum(gasinstorage)*100) as Full_by_Countries, 
+		'EU+NonEU' as EU,
+		100-1 as dummy
+	from 
+				(select *
+			from agsi  
+			union
+			select *
+			from agsi_sandbox) as a
+		left join names as n
+		on a.code=n.code
+	where gasdaystart=(select max(gasdaystart) from (select gasdaystart 
+								from agsi  
+								union
+								select gasdaystart
+								from agsi_sandbox) as a)
+	group by gasdaystart
+	) as a2
+
+```
+
+|Country	|Gas_in_Storage_TWh	|Full_by_Countries	|Ranking
+|---	|---	|---	|---
+|Germany	|241.2	|0.98	|1
+|Italy	|177.3	|0.9163	|2
+|France	|129.5	|0.9689	|3
+|Netherlands	|123	|0.8855	|4
+|Austria	|89.7	|0.9385	|5
+|Poland	|35.4	|0.9734	|6
+|Other	|234.1	|0.890446721981314	|7
+|*** Total (EU)	|1030.2	|0.932169104411994	|8
+|Ukraine	|99.1	|0.305	|9
+|United Kingdom	|10.5	|1	|10
+|*** Total (EU+NonEU)	|1137.8	|0.878612189282578	|11
+
+
+
+### 2
+![Schema](https://github.com/Nostr77/AGSI_SQL/raw/main/Capture6.JPG)
+```
+```
+
+### 3
 ![Schema](https://github.com/Nostr77/AGSI_SQL/raw/main/Capture7.JPG)
 
+```
+```
+
+### 4
 ![Schema](https://github.com/Nostr77/AGSI_SQL/raw/main/Capture8.JPG)
 
+```
+```
 
 
 
