@@ -125,6 +125,7 @@ in
 ### 1 o_table.sql
 ![Schema](https://github.com/Nostr77/AGSI_SQL/raw/main/Capture5.JPG)
 
+SQL
 ```
 alter view o_table as
 select 
@@ -222,6 +223,7 @@ from
 	) as a2
 
 ```
+Result
 
 |Country	|Gas_in_Storage_TWh	|Full_by_Countries	|Ranking
 |---	|---	|---	|---
@@ -239,22 +241,131 @@ from
 
 
 
-### 2
+### 2 o_year_full.sql
 ![Schema](https://github.com/Nostr77/AGSI_SQL/raw/main/Capture6.JPG)
+
+DAX Header
+
 ```
+DTO2 = CONCATENATE("Storage Full as of ",Format(max(o_last_day_archive[last_day_archive]), "dd MMMM YYYY"))
 ```
 
-### 3
+SQL
+
+```
+alter view o_year_full as 
+select 
+	datepart(yy, gasdaystart) as Year, 
+	round(sum(gasinstorage),1) as Gas_in_Storage_TWh, 
+	sum(gasinstorage*full_)/(sum(gasinstorage)*100) as Full_ 
+from 
+		(select *
+		from agsi  
+		union
+		select *
+		from agsi_sandbox) as a
+	left join names as n
+	on a.code=n.code
+where 
+	datepart(mm,gasdaystart)=datepart(mm,(select max(gasdaystart) from (select gasdaystart 
+			from agsi  
+			union
+			select gasdaystart
+			from agsi_sandbox) as a) )
+	and datepart(d,gasdaystart)=datepart(d,(select max(gasdaystart) from (select gasdaystart 
+			from agsi  
+			union
+			select gasdaystart
+			from agsi_sandbox) as a) )
+	and EU='EU'
+group by datepart(yy, gasdaystart)
+```
+
+|Year	|Gas_in_Storage_TWh	|Full_
+|---	|---	|---
+|2012	|704.6	|0.874289044848666
+|2013	|732.7	|0.811995851050356
+|2014	|866.5	|0.893925029725604
+|2015	|823.4	|0.800377820261997
+|2016	|879.2	|0.81260902541488
+|2017	|875.1	|0.809951814763526
+|2018	|885.5	|0.820242502998778
+|2019	|1048	|0.945825545001627
+|2020	|983.1	|0.882806274829892
+|2021	|752.8	|0.695642005192956
+|2022	|1030.2	|0.932169104411994
+
+
+### 3 o_table_long_aggregated.sql
 ![Schema](https://github.com/Nostr77/AGSI_SQL/raw/main/Capture7.JPG)
 
+DAX Header
+
 ```
+DTO3 = IF(HASONEVALUE( Dict1[Indicator]),
+ SWITCH(VALUES( Dict1[Indicator]),
+ "Gas in Storage", "Gas Storage Stock, TWh",
+ "Injection", "Daily Injection, TWh",
+ "Withdrawal", "Daily Withdrawal, TWh", "Error")
+ )
+ ```
+
+SQL
 ```
+alter view o_table_long_aggregated as 
+select 
+	datepart(yy, gasdaystart) as Year,
+	CAST (concat('2060-',datepart(mm, gasdaystart),'-',datepart(d, gasdaystart)) as Date) as Floating_Date,
+	gasdaystart,  
+	round(sum(gasinstorage),1) as Gas_in_Storage_TWh, 
+	round(sum(injection),1) as Injection_TWh, 
+	round(sum(withdrawal),1) as Withdrawal_TWh 
+from 
+		(select *
+		from agsi  
+		union
+		select *
+		from agsi_sandbox) as a
+	left join names as n
+	on a.code=n.code
+where 
+	EU='EU'
+group by gasdaystart
+```
+
+Result
+
+|Year	|Floating_Date	|gasdaystart	|Gas_in_Storage_TWh	|Injection_TWh	|Withdrawal_TWh
+|---	|---	|---	|	|	|
+|2012	|2060-08-03T00:00:00.0000000	|2012-08-03T00:00:00.0000000	|616	|2917.9	|46.3
+|2016	|2060-12-09T00:00:00.0000000	|2016-12-09T00:00:00.0000000	|821	|169.6	|5461.7
+|2017	|2060-11-06T00:00:00.0000000	|2017-11-06T00:00:00.0000000	|964.4	|280.5	|2535.8
+|2018	|2060-10-04T00:00:00.0000000	|2018-10-04T00:00:00.0000000	|909.4	|1683.3	|248.7
+|2019	|2060-09-01T00:00:00.0000000	|2019-09-01T00:00:00.0000000	|1016.7	|3260.4	|254.4
+|2020	|2060-07-29T00:00:00.0000000	|2020-07-29T00:00:00.0000000	|948.6	|2647.3	|478.1
+|2021	|2060-06-26T00:00:00.0000000	|2021-06-26T00:00:00.0000000	|517.9	|4375.3	|265.6
+|2022	|2060-05-24T00:00:00.0000000	|2022-05-24T00:00:00.0000000	|488	|4969	|261.5
+|..	|..	|..	|..	|..	|..
+|..	|..	|..	|..	|..	|..
+
 
 ### 4
 ![Schema](https://github.com/Nostr77/AGSI_SQL/raw/main/Capture8.JPG)
 
+DAX Header
+
+```
+DTO4 = IF(HASONEVALUE( Dict1[Indicator]),
+ SWITCH(VALUES( Dict1[Indicator]),
+ "Gas in Storage", CONCATENATE(CONCATENATE("Gas Storage Stock as of ",Format(max(o_last_day_archive[last_day_archive]), "dd MMMM YYYY")), ", TWh"),
+ "Injection", CONCATENATE(CONCATENATE("Injection YTD to ",Format(max(o_last_day_archive[last_day_archive]), "dd MMMM YYYY")), ", TWh"),
+ "Withdrawal", CONCATENATE(CONCATENATE("Withdrawal YTD to  ",Format(max(o_last_day_archive[last_day_archive]), "dd MMMM YYYY")), ", TWh"), "Error")
+ )```
+
+SQL
 ```
 ```
+Result
 
 
 
