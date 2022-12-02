@@ -372,7 +372,8 @@ DTO4 = IF(HASONEVALUE( Dict1[Indicator]),
  "Gas in Storage", CONCATENATE(CONCATENATE("Gas Storage Stock as of ",Format(max(o_last_day_archive[last_day_archive]), "dd MMMM YYYY")), ", TWh"),
  "Injection", CONCATENATE(CONCATENATE("Injection YTD to ",Format(max(o_last_day_archive[last_day_archive]), "dd MMMM YYYY")), ", TWh"),
  "Withdrawal", CONCATENATE(CONCATENATE("Withdrawal YTD to  ",Format(max(o_last_day_archive[last_day_archive]), "dd MMMM YYYY")), ", TWh"), "Error")
- )```
+ )
+ ```
 
 DAX chart
 ```
@@ -381,8 +382,8 @@ IF(HASONEVALUE( Dict1[Indicator]),
  SWITCH(VALUES( Dict1[Indicator]),
  "Gas in Storage", calculate(SUM(o_table_long_aggregated[Gas_in_Storage_TWh]), and(month((o_table_long_aggregated[gasdaystart]))=month(max(o_last_day_archive[last_day_archive])), day((o_table_long_aggregated[gasdaystart]))=day((max(o_last_day_archive[last_day_archive]))))),
  "Injection", calculate(SUM(o_table_long_aggregated[Injection_TWh]), and(month((o_table_long_aggregated[gasdaystart]))<=month(max(o_last_day_archive[last_day_archive])), day((o_table_long_aggregated[gasdaystart]))<=day((max(o_last_day_archive[last_day_archive]))))),
- "Withdrawal", calculate(SUM(o_table_long_aggregated[Withdrawal_TWh]), and(month((o_table_long_aggregated[gasdaystart]))<=month(max(o_last_day_archive[last_day_archive])), day((o_table_long_aggregated[gasdaystart]))<=day((max(o_last_day_archive[last_day_archive]))))) ), "Please select only one value to display")```
-Result
+ "Withdrawal", calculate(SUM(o_table_long_aggregated[Withdrawal_TWh]), and(month((o_table_long_aggregated[gasdaystart]))<=month(max(o_last_day_archive[last_day_archive])), day((o_table_long_aggregated[gasdaystart]))<=day((max(o_last_day_archive[last_day_archive]))))) ), "Please select only one value to display")
+ ```
 
 
 
