@@ -5,11 +5,9 @@ Data description and preparatory python script you can find here.
 [1. PowerBI & Python. Automatic Analytical Dashboard based on PowerBI and Python. From API to Dashboard, combining archive data with recent one](https://github.com/Nostr77/AGSI)
 
 ## SQL part of dashboard
-![Schema](https://github.com/Nostr77/AGSI/raw/main/Capture4.JPG)
+![Schema](https://github.com/Nostr77/AGSI_SQL/raw/main/Capture4.JPG)
 
 ## Power Query M 1. Finding last date in the Archive and make a API Online Direct Query update in PowerBI
-![Schema](https://github.com/Nostr77/AGSI/raw/main/Capture1.JPG)
-
 
 ```
 let
@@ -122,6 +120,15 @@ in
 
 
 ## Dashboard visuals (consists of (a) visual screenshot (b) SQL script (c) Result table
+
+![Schema](https://github.com/Nostr77/AGSI_SQL/raw/main/Capture5.JPG)
+
+![Schema](https://github.com/Nostr77/AGSI_SQL/raw/main/Capture6.JPG)
+
+![Schema](https://github.com/Nostr77/AGSI_SQL/raw/main/Capture7.JPG)
+
+![Schema](https://github.com/Nostr77/AGSI_SQL/raw/main/Capture8.JPG)
+
 
 
 
