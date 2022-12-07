@@ -2,7 +2,7 @@
 Azure Database SQL + PowerBI 
 
 Data description and preparatory python script you can find here.  
-[1. PowerBI & Python. Automatic Analytical Dashboard based on PowerBI and Python. From API to Dashboard, combining archive data with recent one](https://github.com/Nostr77/AGSI)
+[1. PowerBI & Python. Automatic Analytical Dashboard based on SQL Azure Database & PowerBI. From API to Dashboard, combining archive data with recent one](https://github.com/Nostr77/AGSI)
 
 ## SQL part of dashboard
 ![Schema](https://github.com/Nostr77/AGSI_SQL/raw/main/Capture4.JPG)
